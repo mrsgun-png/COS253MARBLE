@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>253 브루마블</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            font-family: 'Malgun Gothic', sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            background-color: #eef2f7; 
+            margin: 0; 
+            padding: 20px; 
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            flex-wrap: wrap; 
+            justify-content: center;
+        }
+
+        /* 왼쪽 미션 기록실 */
+        .history-panel {
+            width: 280px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            height: 680px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+        .history-panel h2 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-top: 0;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .history-list {
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-right: 5px;
+        }
+        .history-list::-webkit-scrollbar { width: 5px; }
+        .history-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        
+        .history-item {
+            font-size: 13px;
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            animation: fadeIn 0.3s ease;
+        }
+        .history-item.key { border-left-color: #f1c40f; background: #fffde9; }
+        .history-item.jail { border-left-color: #e67e22; background: #fff5eb; }
+
+        /* 게임 영역 */
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .status-panel { 
+            background: white; 
+            padding: 15px 30px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+            text-align: center; 
+            margin-bottom: 20px; 
+            min-width: 400px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        .counter-box {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .counter-box span {
+            font-size: 22px;
+            color: #e74c3c;
+            margin-left: 5px;
+        }
+        .money-box span {
+            color: #2ecc71; 
+        }
+        
+        /* 7x7 보드판 배열 */
+        .board { display: grid; grid-template-columns: repeat(7, 100px); grid-template-rows: repeat(7, 100px); gap: 6px; background-color: #bdc3c7; padding: 8px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; }
+        .cell { background-color: #fff; border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: bold; font-size: 11px; color: #34495e; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.1); text-align: center; padding: 3px; word-break: keep-all; }
+        
+        /* 보드판 중앙 스페이스 및 COS 로고 */
+        .center-space { 
+            grid-column: 2 / 7; 
+            grid-row: 2 / 7; 
+            background-color: #ffffff; 
+            border-radius: 8px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .cos-logo {
+            font-family: 'Futura', 'Arial Rounded MT Bold', 'Helvetica Neue', sans-serif;
+            font-size: 110px; 
+            font-weight: 500; 
+            letter-spacing: 4px; 
+            color: #000000;
+            text-indent: 4px;
+            user-select: none;
+        }
+        
+        .player-token { width: 30px; height: 30px; border: 2px solid white; border-radius: 50%; position: absolute; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); display: flex; justify-content: center; align-items: center; color: white; font-size: 12px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3); background-color: #e74c3c; z-index: 10; }
+        
+        .controls { margin-top: 25px; text-align: center; width: 100%; max-width: 500px; }
+        button { padding: 12px 24px; font-size: 16px; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; margin: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.1s; width: 85%; max-width: 300px; }
+        button:active { transform: scale(0.96); }
+        .btn-dice { background-color: #3498db; }
+        .btn-dice:hover { background-color: #2980b9; }
+        .btn-escape { background-color: #e67e22; display: none; }
+        .btn-escape:hover { background-color: #d35400; }
+        
+        #dice-result { font-size: 18px; font-weight: bold; color: #3498db; margin: 10px 0; min-height: 24px; line-height: 1.4; }
+        
+        #live-mission-box { 
+            font-size: 16px; 
+            font-weight: bold; 
+            color: #2c3e50; 
+            margin-top: 15px; 
+            padding: 18px; 
+            background: #ffffff; 
+            border-left: 6px solid #3498db; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06); 
+            text-align: left;
+            line-height: 1.5;
+            display: block; 
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="history-panel">
+            <h2>📜 미션 수행 기록</h2>
+            <div class="history-list" id="history-list">
+                <div style="color:#aaa; text-align:center; margin-top:20px; font-size:13px;">아직 수행한 미션이 없습니다.</div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <h1>🎲 253 브루마블</h1>
+            
+            <div class="status-panel">
+                <div class="counter-box">바퀴 수: <span id="lap-counter">0</span> 바퀴</div>
+                <div class="counter-box money-box">획득한 코스머니: <span id="money-counter">0</span>원</div>
+            </div>
+
+            <div class="board" id="board">
+                <div id="cell-0" class="cell" style="background-color: #fab1a0; color: #d63031;">🚩 출발점</div>
+                <div id="cell-1" class="cell">1번 칸</div>
+                <div id="cell-2" class="cell">2번 칸</div>
+                <div id="cell-3" class="cell" style="background-color: #ffeaa7; color: #e1b12c;">🔑 황금열쇠</div>
+                <div id="cell-4" class="cell">4번 칸</div>
+                <div id="cell-5" class="cell">5번 칸</div>
+                <div id="cell-6" class="cell">6번 칸</div>
+
+                <div id="cell-23" class="cell">23번 칸</div>
+                
+                <div class="center-space">
+                    <div class="cos-logo">COS</div>
+                </div> 
+                
+                <div id="cell-7" class="cell">7번 칸</div>
+
+                <div id="cell-22" class="cell">22번 칸</div>
+                <div id="cell-8" class="cell">8번 칸</div>
+
+                <div id="cell-21" class="cell" style="background-color: #ffeaa7; color: #e1b12c;">🔑 황금열쇠</div>
+                <div id="cell-9" class="cell" style="background-color: #ffeaa7; color: #e1b12c;">🔑 황금열쇠</div>
+
+                <div id="cell-20" class="cell">20번 칸</div>
+                <div id="cell-10" class="cell">10번 칸</div>
+
+                <div id="cell-19" class="cell">19번 칸</div>
+                <div id="cell-11" class="cell">11번 칸</div>
+
+                <div id="cell-18" class="cell">18번 칸</div>
+                <div id="cell-17" class="cell">17번 칸</div>
+                <div id="cell-16" class="cell" style="background-color: #ffeaa7; color: #e1b12c;">🔑 황금열쇠</div>
+                <div id="cell-15" class="cell">15번 칸</div>
+                <div id="cell-14" class="cell">14번 칸</div>
+                <div id="cell-13" class="cell">13번 칸</div>
+                <div id="cell-12" class="cell" style="background-color: #74b9ff; color: #0984e3;">🏝️ 무인도</div>
+
+                <div id="player" class="player-token">나</div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-dice" id="dice-btn" onclick="rollDice()">주사위 굴리기</button>
+                <button class="btn-escape" id="escape-btn" onclick="escapeJail()">🏝️ 벌칙완료! 무인도 탈출</button>
+                
+                <p id="dice-result">게임을 시작하려면 주사위를 굴리세요!</p>
+                
+                <div id="live-mission-box">🎯 여기에 도착한 칸의 미션이 실시간으로 표시됩니다.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentPosition = 0;
+        let lapCount = 0;
+        let courseMoney = 0; 
+        let isInJail = false;
+
+        const mapData = [
+            { name: "출발점", mission: "물 마시고 오기! 💧" },
+            { name: "1번 칸", mission: "지금 세일즈 확인하고 워키로 공유하기 📻" },
+            { name: "2번 칸", mission: "세일아이템 어프로치하기" },
+            { name: "황금열쇠", mission: "황금열쇠 작동" }, 
+            { name: "4번 칸", mission: "P.P 추천하기 👗" },
+            { name: "5번 칸", mission: "워키로 팀원들에게 화이팅 멘트하기 🗣️" },
+            { name: "6번 칸", mission: "다른 층 괜찮은지 확인하기 👀" },
+            { name: "7번 칸", mission: "고객님께 어프로치하기" },
+            { name: "8번 칸", mission: "아이템 추천 3개 이상! 🛍️" },
+            { name: "황금열쇠", mission: "황금열쇠 작동" }, 
+            { name: "10번 칸", mission: "현재 몇 피스 팔았는지 매니저팀에게 확인하기" },
+            { name: "11번 칸", mission: "세일존 정리하기 ✨" },
+            { name: "무인도", mission: "🚨 무인도 조난! [벌칙]: 팀원들 찾아가서 칭찬 피드백하기 수행 후 탈출 버튼을 누르세요!" }, 
+            { name: "13번 칸", mission: "아이리플렌 확인하기 🔍" },
+            { name: "14번 칸", mission: "아이템 추천 3개 이상! 👔" },
+            { name: "황금열쇠", mission: "황금열쇠 작동" }, 
+            { name: "16번 칸", mission: "세일아이템 어프로치하기" },
+            { name: "17번 칸", mission: "서포트 필요한 곳 있는지 확인하기 🤝" },
+            { name: "18번 칸", mission: "스타일링 도와드리기 👠" },
+            { name: "19번 칸", mission: "고객님께 어프로치하기" },
+            { name: "20번 칸", mission: "세일아이템+풀프아이템 동시판매하기 💳" },
+            { name: "황금열쇠", mission: "황금열쇠 작동" }, 
+            { name: "22번 칸", mission: "PBS 성공하기 🎉" }, 
+            { name: "23번 칸", mission: "P.P 추천하기 🧥" }
+        ];
+
+        const goldenKeyCards = [
+            "🔑 [황금열쇠] 주사위 한번 더 던지기!",
+            "🔑 [황금열쇠] 코스머니 천원 획득!",
+            "🔑 [황금열쇠] 코스머니 3천원 획득!",
+            "🔑 [황금열쇠] 코스머니 2천원 획득!"
+        ];
+
+        function moveToken(position) {
+            const cell = document.getElementById(`cell-${position}`);
+            const token = document.getElementById('player');
+            const cellRect = cell.getBoundingClientRect();
+            const boardRect = cell.parentElement.getBoundingClientRect();
+            
+            const topPos = cellRect.top - boardRect.top + (cellRect.height / 2) - 15;
+            const leftPos = cellRect.left - boardRect.left + (cellRect.width / 2) - 15;
+            
+            token.style.top = `${topPos}px`;
+            token.style.left = `${leftPos}px`;
+        }
+
+        function addHistoryLog(type, cellName, detail) {
+            const historyList = document.getElementById('history-list');
+            if (historyList.innerHTML.includes("아직 수행한 미션이 없습니다")) {
+                historyList.innerHTML = "";
+            }
+
+            const item = document.createElement('div');
+            item.className = `history-item ${type}`;
+            
+            const now = new Date();
+            const monthStr = (now.getMonth() + 1).toString().padStart(2, '0');
+            const dateStr = now.getDate().toString().padStart(2, '0');
+            const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+
+            item.innerHTML = `<strong>[${monthStr}/${dateStr} ${timeStr}] ${cellName}</strong><br>${detail}`;
+            historyList.insertBefore(item, historyList.firstChild);
+        }
+
+        // 🌟 주사위를 단 1개만 생성하여 1~6칸 이동하도록 로직 단순화
+        function rollDice() {
+            if (isInJail) {
+                document.getElementById('live-mission-box').innerHTML = `<span style="color:#e67e22;">⚠️ 현재 무인도에 갇혀있습니다!<br><b>[벌칙]: 팀원들 찾아가서 칭찬 피드백하기</b>를 완료한 뒤 아래 탈출 버튼을 눌러주세요.</span>`;
+                return;
+            }
+
+            const totalMove = Math.floor(Math.random() * 6) + 1; // 1~6 주사위 1개
+
+            document.getElementById('dice-result').innerHTML = `주사위 결과 ➡️ 🎲 ${totalMove} (총 ${totalMove}칸 전진)`;
+
+            let nextPosition = currentPosition + totalMove;
+            
+            if (nextPosition >= 24) {
+                lapCount++;
+                courseMoney += 1000; 
+                
+                document.getElementById('lap-counter').innerText = lapCount;
+                document.getElementById('money-counter').innerText = courseMoney.toLocaleString();
+            }
+            
+            currentPosition = nextPosition % 24;
+            moveToken(currentPosition);
+
+            setTimeout(() => {
+                const currentCell = mapData[currentPosition];
+                let missionText = currentCell.mission;
+                let logType = "";
+
+                if ([3, 9, 15, 21].includes(currentPosition)) {
+                    const cardIndex = Math.floor(Math.random() * goldenKeyCards.length);
+                    missionText = goldenKeyCards[cardIndex];
+                    logType = "key";
+                } 
+                else if (currentPosition === 12) {
+                    isInJail = true;
+                    logType = "jail";
+                    document.getElementById('dice-btn').style.display = "none";
+                    document.getElementById('escape-btn').style.display = "inline-block";
+                    document.getElementById('live-mission-box').style.borderLeftColor = "#e67e22";
+                } else {
+                    document.getElementById('live-mission-box').style.borderLeftColor = "#3498db";
+                }
+
+                document.getElementById('live-mission-box').innerHTML = `
+                    <span style="color:#7f8c8d; font-size:12px;">현재 위치: ${currentCell.name}</span><br>
+                    <span style="font-size:16px; color:#2c3e50;">🎯 <b>미션:</b> ${missionText}</span>
+                `;
+
+                addHistoryLog(logType, currentCell.name, missionText);
+
+            }, 400);
+        }
+
+        function escapeJail() {
+            isInJail = false;
+            document.getElementById('dice-btn').style.display = "inline-block";
+            document.getElementById('escape-btn').style.display = "none";
+            document.getElementById('live-mission-box').style.borderLeftColor = "#3498db";
+            
+            document.getElementById('live-mission-box').innerHTML = `🎉 무인도에서 무사히 탈출했습니다! 주사위를 다시 굴리세요.`;
+            addHistoryLog("normal", "🏝️ 무인도 탈출", "팀원 칭찬 피드백 벌칙 완료 후 탈출했습니다.");
+        }
+
+        window.onload = function() {
+            moveToken(0);
+        };
+    </script>
+</body>
+</html>
