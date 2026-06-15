@@ -106,12 +106,11 @@
             transition: transform 0.2s;
         }
         
-        /* 보드판 디자인에 맞춘 파스텔 칸 컬러 테마 */
-        .bg-mint   { background-color: #eccc68; } /* 옐로우 스퀘어 느낌 */
-        .bg-pink   { background-color: #ff7f50; color: #fff; } /* 오렌지/핑크 */
-        .bg-blue   { background-color: #74b9ff; color: #fff; } /* 하늘색 */
-        .bg-purple { background-color: #a4b0be; } /* 그레이시 블루 */
-        .bg-green  { background-color: #7bed9f; } /* 민트그린 */
+        /* 보드판 파스텔 칸 컬러 테마 */
+        .bg-yellow { background-color: #fbd57e; } 
+        .bg-orange { background-color: #ff7f50; color: #fff; } 
+        .bg-blue   { background-color: #74b9ff; color: #fff; } 
+        .bg-green  { background-color: #7bed9f; } 
         
         /* 중앙 영역 및 로고 */
         .center-space { 
@@ -143,7 +142,7 @@
             letter-spacing: 1px;
         }
         
-        /* 🏃‍♂️ 플레이어 말 디자인 개편 (입체감 부여) */
+        /* 플레이어 말 디자인 */
         .player-token { 
             width: 7%; 
             height: 7%; 
@@ -188,7 +187,7 @@
         
         #dice-result { font-size: 15px; font-weight: bold; color: #57606f; margin: 8px 0; min-height: 22px; }
         
-        /* 🎯 실시간 미션 알림창 카드형 디자인 */
+        /* 실시간 미션 알림창 카드형 디자인 */
         #live-mission-box { 
             font-size: 15px; 
             font-weight: bold; 
@@ -249,7 +248,7 @@
         @media (max-width: 600px) {
             body { padding: 5px; }
             h1 { font-size: 22px; margin: 5px 0; }
-            .cell { font-size: 8px; padding: 1px; line-height: 1.1; }
+            .cell { font-size: 9px; padding: 1px; line-height: 1.1; }
             .cos-logo { font-size: 14vw; }
             #live-mission-box { font-size: 14px; padding: 12px; }
             button { padding: 12px 15px; font-size: 16px; }
@@ -270,45 +269,45 @@
                 <div class="counter-box money-box">💳 코스머니: <span id="money-counter">0</span>원</div>
             </div>
 
-            <!-- 7x7 보드판 (캐주얼 테마 컬러 적용) -->
+            <!-- 7x7 보드판 (칸 이름 1~23번 칸 원상복구) -->
             <div class="board" id="board">
                 <!-- 상단줄 -->
                 <div id="cell-0" class="cell" style="background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%); color: #fff;">🚩 출발</div>
-                <div id="cell-1" class="cell bg-mint">🚀 1번 칸</div>
+                <div id="cell-1" class="cell bg-yellow">1번 칸</div>
                 <div id="cell-2" class="cell bg-green">2번 칸</div>
                 <div id="cell-3" class="cell" style="background-color: #fffae8; border: 2px dashed #ffa502; color: #ff7f50;">🔑 황금</div>
-                <div id="cell-4" class="cell bg-blue">👗 P.P 추천</div>
-                <div id="cell-5" class="cell bg-mint">5번 칸</div>
+                <div id="cell-4" class="cell bg-blue">4번 칸</div>
+                <div id="cell-5" class="cell bg-yellow">5번 칸</div>
                 <div id="cell-6" class="cell bg-green">6번 칸</div>
 
                 <!-- 왼쪽 라인 / 중앙 / 오른쪽 라인 배치 -->
-                <div id="cell-23" class="cell bg-blue">🧥 P.P 추천</div>
+                <div id="cell-23" class="cell bg-blue">23번 칸</div>
                 
                 <div class="center-space">
                     <div class="cos-logo">COS</div>
                     <div class="center-subtext">CHEONGDAM FLAGSHIP</div>
                 </div> 
                 
-                <div id="cell-7" class="cell bg-pink">7번 칸</div>
+                <div id="cell-7" class="cell bg-orange">7번 칸</div>
 
-                <div id="cell-22" class="cell bg-green">🎉 PBS 성공</div>
-                <div id="cell-8" class="cell bg-blue">🛍️ 아이템3</div>
+                <div id="cell-22" class="cell bg-green">22번 칸</div>
+                <div id="cell-8" class="cell bg-blue">8번 칸</div>
 
                 <div id="cell-21" class="cell" style="background-color: #fffae8; border: 2px dashed #ffa502; color: #ff7f50;">🔑 황금</div>
                 <div id="cell-9" class="cell" style="background-color: #fffae8; border: 2px dashed #ffa502; color: #ff7f50;">🔑 황금</div>
 
-                <div id="cell-20" class="cell bg-pink">20번 칸</div>
-                <div id="cell-10" class="cell bg-mint">10번 칸</div>
+                <div id="cell-20" class="cell bg-orange">20번 칸</div>
+                <div id="cell-10" class="cell bg-yellow">10번 칸</div>
 
-                <div id="cell-19" class="cell bg-mint">19번 칸</div>
-                <div id="cell-11" class="cell bg-green">✨ 세일존</div>
+                <div id="cell-19" class="cell bg-yellow">19번 칸</div>
+                <div id="cell-11" class="cell bg-green">11번 칸</div>
 
                 <!-- 하단줄 -->
-                <div id="cell-18" class="cell bg-green">👠 스타일링</div>
+                <div id="cell-18" class="cell bg-green">18번 칸</div>
                 <div id="cell-17" class="cell bg-blue">17번 칸</div>
                 <div id="cell-16" class="cell" style="background-color: #fffae8; border: 2px dashed #ffa502; color: #ff7f50;">🔑 황금</div>
-                <div id="cell-15" class="cell bg-mint">15번 칸</div>
-                <div id="cell-14" class="cell bg-pink">👔 아이템3</div>
+                <div id="cell-15" class="cell bg-yellow">15번 칸</div>
+                <div id="cell-14" class="cell bg-orange">14번 칸</div>
                 <div id="cell-13" class="cell bg-green">13번 칸</div>
                 <div id="cell-12" class="cell" style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: #fff;">🌴 무인도</div>
 
@@ -346,26 +345,26 @@
             { name: "1번 칸", mission: "지금 세일즈 확인하고 워키로 공유하기 📻" },
             { name: "2번 칸", mission: "세일아이템 어프로치하기" },
             { name: "황금열쇠", mission: "황금열쇠 작동" }, 
-            { name: "P.P 추천 칸", mission: "P.P 추천하기 👗" },
+            { name: "4번 칸", mission: "P.P 추천하기 👗" },
             { name: "5번 칸", mission: "워키로 팀원들에게 화이팅 멘트하기 🗣️" },
             { name: "6번 칸", mission: "다른 층 괜찮은지 확인하기 👀" },
             { name: "7번 칸", mission: "고객님께 어프로치하기" },
-            { name: "아이템 추천 칸", mission: "아이템 추천 3개 이상! 🛍️" },
+            { name: "8번 칸", mission: "아이템 추천 3개 이상! 🛍️" },
             { name: "황금열쇠", mission: "황금열쇠 작동" }, 
             { name: "10번 칸", mission: "현재 몇 피스 팔았는지 매니저팀에게 확인하기" },
-            { name: "세일존 칸", mission: "세일존 정리하기 ✨" },
+            { name: "11번 칸", mission: "세일존 정리하기 ✨" },
             { name: "무인도", mission: "🚨 무인도 조난! [벌칙]: 팀원들 찾아가서 칭찬 피드백하기 수행 후 탈출 버튼을 누르세요!" }, 
             { name: "13번 칸", mission: "아이리플렌 확인하기 🔍" },
-            { name: "아이템 추천 칸", mission: "아이템 추천 3개 이상! 👔" },
+            { name: "14번 칸", mission: "아이템 추천 3개 이상! 👔" },
             { name: "황금열쇠", mission: "황금열쇠 작동" }, 
             { name: "16번 칸", mission: "세일아이템 어프로치하기" },
             { name: "17번 칸", mission: "서포트 필요한 곳 있는지 확인하기 🤝" },
-            { name: "스타일링 칸", mission: "스타일링 도와드리기 👠" },
+            { name: "18번 칸", mission: "스타일링 도와드리기 👠" },
             { name: "19번 칸", mission: "고객님께 어프로치하기" },
             { name: "20번 칸", mission: "세일아이템+풀프아이템 동시판매하기 💳" },
             { name: "황금열쇠", mission: "황금열쇠 작동" }, 
-            { name: "PBS 성공 칸", mission: "PBS 성공하기 🎉" }, 
-            { name: "P.P 추천 칸", mission: "P.P 추천하기 🧥" }
+            { name: "22번 칸", mission: "PBS 성공하기 🎉" }, 
+            { name: "23번 칸", mission: "P.P 추천하기 🧥" }
         ];
 
         const goldenKeyCards = [
