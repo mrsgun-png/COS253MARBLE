@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>253 브루마블</title>
+    <title>253 브루마블 (자동 세이브)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         body { 
@@ -25,7 +25,6 @@
             justify-content: center;
         }
 
-        /* 게임 메인 영역 */
         .game-area {
             display: flex;
             flex-direction: column;
@@ -40,6 +39,38 @@
             color: #2c3e50;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
+
+        /* 👥 유저 로그인/로그아웃 패널 */
+        .login-panel {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .login-panel input {
+            padding: 10px;
+            font-size: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            width: 60%;
+            max-width: 200px;
+            margin-right: 5px;
+        }
+        .btn-small {
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            background: #34495e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .btn-logout { background: #e74c3c; }
         
         .status-panel { 
             background: rgba(255, 255, 255, 0.9); 
@@ -50,10 +81,38 @@
             margin-bottom: 12px; 
             width: 100%;
             display: flex;
+            flex-direction: column;
             justify-content: space-around;
             align-items: center;
             box-sizing: border-box;
             border: 2px solid #fff;
+        }
+
+        .data-controls {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #f1f2f6;
+            padding-bottom: 5px;
+        }
+        .btn-reset {
+            background: none;
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        
+        .counter-group {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
         }
         .counter-box {
             font-size: 14px;
@@ -65,11 +124,9 @@
             color: #ff4757;
             margin-left: 4px;
         }
-        .money-box span {
-            color: #2ed573; 
-        }
+        .money-box span { color: #2ed573; }
         
-        /* 🎲 캐주얼 보드판 스타일 */
+        /* 🎲 보드판 스타일 */
         .board { 
             display: grid; 
             grid-template-columns: repeat(7, minmax(40px, 100px)); 
@@ -87,7 +144,6 @@
             border: 4px solid #ffffff;
         }
         
-        /* 개별 칸 캐주얼 스타일 */
         .cell { 
             background-color: #fff; 
             border-radius: 8px; 
@@ -103,16 +159,13 @@
             padding: 3px; 
             word-break: keep-all; 
             overflow: hidden;
-            transition: transform 0.2s;
         }
         
-        /* 보드판 파스텔 칸 컬러 테마 */
         .bg-yellow { background-color: #fbd57e; } 
         .bg-orange { background-color: #ff7f50; color: #fff; } 
         .bg-blue   { background-color: #74b9ff; color: #fff; } 
         .bg-green  { background-color: #7bed9f; } 
         
-        /* 중앙 영역 및 로고 */
         .center-space { 
             grid-column: 2 / 7; 
             grid-row: 2 / 7; 
@@ -127,11 +180,9 @@
         .cos-logo {
             font-family: 'Futura', sans-serif;
             font-size: 13vw; 
-            max-size: 100px;
             font-weight: bold; 
             letter-spacing: 4px; 
             color: #1e272e;
-            user-select: none;
             opacity: 0.85;
         }
         .center-subtext {
@@ -139,10 +190,8 @@
             color: #747d8c;
             font-weight: bold;
             margin-top: -5px;
-            letter-spacing: 1px;
         }
         
-        /* 플레이어 말 디자인 */
         .player-token { 
             width: 7%; 
             height: 7%; 
@@ -161,9 +210,9 @@
             box-shadow: 0 6px 10px rgba(0,0,0,0.3); 
             background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
             z-index: 10; 
+            display: none; /* 로그인 전에는 숨김 */
         }
         
-        /* 컨트롤 버튼 그룹 */
         .controls { margin-top: 15px; text-align: center; width: 100%; }
         
         button { 
@@ -176,18 +225,14 @@
             cursor: pointer; 
             margin: 5px; 
             box-shadow: 0 6px 14px rgba(0,0,0,0.1); 
-            transition: all 0.1s ease; 
             width: 90%; 
             max-width: 300px; 
         }
-        button:active { transform: scale(0.95); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
         .btn-dice { background: linear-gradient(135deg, #2f3542 0%, #57606f 100%); }
         .btn-escape { background: linear-gradient(135deg, #ff7f50 0%, #ff6b81 100%); display: none; }
         
         #dice-result { font-size: 15px; font-weight: bold; color: #57606f; margin: 8px 0; min-height: 22px; }
-        
-        /* 실시간 미션 알림창 카드형 디자인 */
         #live-mission-box { 
             font-size: 15px; 
             font-weight: bold; 
@@ -202,7 +247,6 @@
             border: 2px solid #e4e7eb;
         }
 
-        /* 하단 히스토리 패널 */
         .history-panel {
             width: 100%;
             max-width: 730px;
@@ -224,14 +268,8 @@
             border-bottom: 2px solid #f1f2f6;
             padding-bottom: 8px;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
         }
-        .history-list {
-            overflow-y: auto;
-            flex-grow: 1;
-        }
+        .history-list { overflow-y: auto; flex-grow: 1; }
         .history-item {
             font-size: 12px;
             background: #f1f2f6;
@@ -244,15 +282,13 @@
         .history-item.key { border-left-color: #ffa502; background: #fffaf0; color: #dd8200; }
         .history-item.jail { border-left-color: #ff4757; background: #fff0f2; color: #d63031; }
 
-        /* 📱 모바일 화면 대응 글자 크기 최적화 */
         @media (max-width: 600px) {
             body { padding: 5px; }
-            h1 { font-size: 22px; margin: 5px 0; }
-            .cell { font-size: 9px; padding: 1px; line-height: 1.1; }
+            h1 { font-size: 22px; }
+            .cell { font-size: 9px; padding: 1px; }
             .cos-logo { font-size: 14vw; }
             #live-mission-box { font-size: 14px; padding: 12px; }
             button { padding: 12px 15px; font-size: 16px; }
-            .history-panel { height: 180px; }
         }
     </style>
 </head>
@@ -260,18 +296,25 @@
 
     <div class="container">
         
-        <!-- 게임 플레이 영역 -->
         <div class="game-area">
             <h1>🎲 253 브루마블</h1>
+
+            <div class="login-panel" id="auth-area">
+                </div>
             
             <div class="status-panel">
-                <div class="counter-box">🏃‍♂️ 바퀴 수: <span id="lap-counter">0</span></div>
-                <div class="counter-box money-box">💳 코스머니: <span id="money-counter">0</span>원</div>
+                <div class="data-controls">
+                    <span id="save-status">👤 로그인 후 게임을 시작해 주세요.</span>
+                    <button class="btn-reset" id="reset-btn" onclick="confirmResetGame()" style="display:none;">🔄 초기화</button>
+                </div>
+                
+                <div class="counter-group">
+                    <div class="counter-box">🏃‍♂️ 바퀴 수: <span id="lap-counter">0</span></div>
+                    <div class="counter-box money-box">💳 코스머니: <span id="money-counter">0</span>원</div>
+                </div>
             </div>
 
-            <!-- 7x7 보드판 (칸 이름 1~23번 칸 원상복구) -->
             <div class="board" id="board">
-                <!-- 상단줄 -->
                 <div id="cell-0" class="cell" style="background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%); color: #fff;">🚩 출발</div>
                 <div id="cell-1" class="cell bg-yellow">1번 칸</div>
                 <div id="cell-2" class="cell bg-green">2번 칸</div>
@@ -280,14 +323,11 @@
                 <div id="cell-5" class="cell bg-yellow">5번 칸</div>
                 <div id="cell-6" class="cell bg-green">6번 칸</div>
 
-                <!-- 왼쪽 라인 / 중앙 / 오른쪽 라인 배치 -->
                 <div id="cell-23" class="cell bg-blue">23번 칸</div>
-                
                 <div class="center-space">
                     <div class="cos-logo">COS</div>
                     <div class="center-subtext">CHEONGDAM FLAGSHIP</div>
                 </div> 
-                
                 <div id="cell-7" class="cell bg-orange">7번 칸</div>
 
                 <div id="cell-22" class="cell bg-green">22번 칸</div>
@@ -302,7 +342,6 @@
                 <div id="cell-19" class="cell bg-yellow">19번 칸</div>
                 <div id="cell-11" class="cell bg-green">11번 칸</div>
 
-                <!-- 하단줄 -->
                 <div id="cell-18" class="cell bg-green">18번 칸</div>
                 <div id="cell-17" class="cell bg-blue">17번 칸</div>
                 <div id="cell-16" class="cell" style="background-color: #fffae8; border: 2px dashed #ffa502; color: #ff7f50;">🔑 황금</div>
@@ -317,24 +356,22 @@
             <div class="controls">
                 <button class="btn-dice" id="dice-btn" onclick="rollDice()">🎲 주사위 굴리기</button>
                 <button class="btn-escape" id="escape-btn" onclick="escapeJail()">🏃‍♂️ 벌칙완료! 탈출</button>
-                
-                <p id="dice-result">게임을 시작하려면 주사위를 굴리세요!</p>
-                
-                <div id="live-mission-box">🎯 도착 칸의 미션이 실시간 표시됩니다.</div>
+                <p id="dice-result">이름을 입력하고 주사위를 굴리세요!</p>
+                <div id="live-mission-box">🎯 유저 등록을 하시면 이전 기록을 불러옵니다.</div>
             </div>
         </div>
 
-        <!-- 하단 미션 기록실 -->
         <div class="history-panel">
             <h2>📜 미션 수행 기록</h2>
             <div class="history-list" id="history-list">
-                <div style="color:#aaa; text-align:center; margin-top:20px; font-size:13px;">아직 수행한 미션이 없습니다.</div>
+                <div id="empty-history-text" style="color:#aaa; text-align:center; margin-top:20px; font-size:13px;">아직 수행한 미션이 없습니다.</div>
             </div>
         </div>
 
     </div>
 
     <script>
+        let currentUser = "";
         let currentPosition = 0;
         let lapCount = 0;
         let courseMoney = 0; 
@@ -374,58 +411,172 @@
             "🔑 [황금열쇠] 코스머니 2천원 획득!"
         ];
 
+        // 🌟 앱 구동 즉시 실행 (마지막 접속자 자동 기억)
+        window.onload = function() {
+            const lastActiveUser = localStorage.getItem('cos_marble_last_active');
+            if (lastActiveUser) {
+                loginUser(lastActiveUser);
+            } else {
+                renderLoggedOutUI();
+                moveToken(0);
+            }
+        };
+
+        // UI 렌더링: 로그아웃 상태 (이름 입력창 배치)
+        function renderLoggedOutUI() {
+            document.getElementById('auth-area').innerHTML = `
+                <input type="text" id="username-input" placeholder="이름을 입력하세요 (예: 홍길동)" onkeypress="if(event.keyCode==13) handleLoginClick()">
+                <button class="btn-small" onclick="handleLoginClick()">로그인</button>
+            `;
+            document.getElementById('save-status').innerText = "👤 로그인 후 게임을 시작해 주세요.";
+            document.getElementById('reset-btn').style.display = "none";
+            document.getElementById('player').style.display = "none";
+            document.getElementById('dice-btn').disabled = true;
+            document.getElementById('dice-btn').style.opacity = "0.5";
+        }
+
+        // UI 렌더링: 로그인 상태 (이름 표시 및 로그아웃 버튼 배치)
+        function renderLoggedInUI(username) {
+            document.getElementById('auth-area').innerHTML = `
+                <span style="font-size:16px; font-weight:bold; color:#2c3e50; margin-right:15px;">👤 근무자: <b>${username}</b>님 플레이 중</span>
+                <button class="btn-small btn-logout" onclick="logoutUser()">로그아웃 (유저전환)</button>
+            `;
+            document.getElementById('reset-btn').style.display = "inline-block";
+            document.getElementById('player').style.display = "flex";
+            document.getElementById('dice-btn').disabled = false;
+            document.getElementById('dice-btn').style.opacity = "1";
+        }
+
+        function handleLoginClick() {
+            const nameInput = document.getElementById('username-input').value.trim();
+            if(!nameInput) { alert("이름을 입력해 주세요!"); return; }
+            loginUser(nameInput);
+        }
+
+        // 🌟 유저 로그인 및 기록 불러오기 (새로고침 대응 핵심)
+        function loginUser(username) {
+            currentUser = username;
+            localStorage.setItem('cos_marble_last_active', username); // 마지막 액티브 유저 저장
+            
+            document.getElementById('player').innerText = currentUser.substring(0,2);
+            renderLoggedInUI(currentUser);
+
+            // 기기 내에 이 이름으로 저장된 기록이 있는지 확인
+            const savedString = localStorage.getItem('cos_marble_data_' + currentUser);
+            
+            if (savedString) {
+                // 기존 데이터가 있다면 원복
+                const data = JSON.parse(savedString);
+                currentPosition = data.position;
+                lapCount = data.laps;
+                courseMoney = data.money;
+                isInJail = data.jail;
+                document.getElementById('history-list').innerHTML = data.history;
+                
+                document.getElementById('live-mission-box').innerHTML = `⏳ <b>${currentUser}</b>님의 이전 기록(<b>${currentPosition}번 칸</b>)을 자동으로 불러왔습니다!`;
+            } else {
+                // 신규 유저라면 초기화
+                currentPosition = 0;
+                lapCount = 0;
+                courseMoney = 0;
+                isInJail = false;
+                document.getElementById('history-list').innerHTML = '<div id="empty-history-text" style="color:#aaa; text-align:center; margin-top:20px; font-size:13px;">아직 수행한 미션이 없습니다.</div>';
+                document.getElementById('live-mission-box').innerHTML = `🎯 <b>${currentUser}</b>님 환영합니다! 주사위를 던져 미션을 시작해 보세요!`;
+                saveGameData();
+            }
+
+            document.getElementById('lap-counter').innerText = lapCount;
+            document.getElementById('money-counter').innerText = courseMoney.toLocaleString();
+            
+            if (isInJail) {
+                document.getElementById('dice-btn').style.display = "none";
+                document.getElementById('escape-btn').style.display = "inline-block";
+            } else {
+                document.getElementById('dice-btn').style.display = "inline-block";
+                document.getElementById('escape-btn').style.display = "none";
+            }
+
+            setTimeout(() => moveToken(currentPosition), 100);
+            updateSaveStatusTime();
+        }
+
+        // 🌟 로그아웃 (다음 팀원을 위해 양보)
+        function logoutUser() {
+            if(confirm("로그아웃 하시겠습니까?\n(현재까지의 기록은 브라우저에 안전하게 자동 저장되어 있습니다.)")) {
+                localStorage.removeItem('cos_marble_last_active'); // 액티브 정보만 삭제
+                currentUser = "";
+                document.getElementById('lap-counter').innerText = "0";
+                document.getElementById('money-counter').innerText = "0";
+                document.getElementById('dice-result').innerText = "이름을 입력하고 주사위를 굴리세요!";
+                document.getElementById('live-mission-box').innerText = "🎯 유저 등록을 하시면 이전 기록을 불러옵니다.";
+                document.getElementById('history-list').innerHTML = '<div id="empty-history-text" style="color:#aaa; text-align:center; margin-top:20px; font-size:13px;">아직 수행한 미션이 없습니다.</div>';
+                renderLoggedOutUI();
+                moveToken(0);
+            }
+        }
+
+        // 주사위 굴릴 때마다 실시간으로 로컬에 세이브
+        function saveGameData() {
+            if(!currentUser) return;
+            const dataToSave = {
+                position: currentPosition,
+                laps: lapCount,
+                money: courseMoney,
+                jail: isInJail,
+                history: document.getElementById('history-list').innerHTML
+            };
+            localStorage.setItem('cos_marble_data_' + currentUser, JSON.stringify(dataToSave));
+            updateSaveStatusTime();
+        }
+
+        function updateSaveStatusTime() {
+            const now = new Date();
+            document.getElementById('save-status').innerText = `💾 [${currentUser}] 자동 저장 중 (${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')})`;
+        }
+
+        function confirmResetGame() {
+            if(!currentUser) return;
+            if(confirm(`🚨 정말 [${currentUser}]님의 오늘의 모든 기록을 리셋하시겠습니까?`)) {
+                localStorage.removeItem('cos_marble_data_' + currentUser);
+                // 강제 로그인 처리하여 초기화 상태 유도
+                loginUser(currentUser);
+            }
+        }
+
         function moveToken(position) {
             const cell = document.getElementById(`cell-${position}`);
             const token = document.getElementById('player');
-            
-            const cellTop = cell.offsetTop;
-            const cellLeft = cell.offsetLeft;
-            const cellWidth = cell.offsetWidth;
-            const cellHeight = cell.offsetHeight;
-            
-            const tokenWidth = token.offsetWidth;
-            const tokenHeight = token.offsetHeight;
-            
-            const topPos = cellTop + (cellHeight / 2) - (tokenHeight / 2);
-            const leftPos = cellLeft + (cellWidth / 2) - (tokenWidth / 2);
-            
+            const topPos = cell.offsetTop + (cell.offsetHeight / 2) - (token.offsetHeight / 2);
+            const leftPos = cell.offsetLeft + (cell.offsetWidth / 2) - (token.offsetWidth / 2);
             token.style.top = `${topPos}px`;
             token.style.left = `${leftPos}px`;
         }
 
         function addHistoryLog(type, cellName, detail) {
             const historyList = document.getElementById('history-list');
-            if (historyList.innerHTML.includes("아직 수행한 미션이 없습니다")) {
-                historyList.innerHTML = "";
-            }
+            const emptyText = document.getElementById('empty-history-text');
+            if(emptyText) emptyText.remove();
 
             const item = document.createElement('div');
             item.className = `history-item ${type}`;
-            
             const now = new Date();
-            const monthStr = (now.getMonth() + 1).toString().padStart(2, '0');
-            const dateStr = now.getDate().toString().padStart(2, '0');
-            const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+            const timeStr = `${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
 
-            item.innerHTML = `<strong>[${monthStr}/${dateStr} ${timeStr}] ${cellName}</strong><br>${detail}`;
+            item.innerHTML = `<strong>[${timeStr}] ${cellName}</strong><br>🎯 <b>미션:</b> ${detail}`;
             historyList.insertBefore(item, historyList.firstChild);
         }
 
         function rollDice() {
-            if (isInJail) {
-                document.getElementById('live-mission-box').innerHTML = `<span style="color:#ff4757;">⚠️ 무인도 상태!<br><b>[벌칙]: 팀원 칭찬하기</b> 후 탈출 버튼을 눌러주세요.</span>`;
-                return;
-            }
+            if(!currentUser) { alert("이름을 입력하고 로그인해 주세요!"); return; }
+            if (isInJail) { return; }
 
             const totalMove = Math.floor(Math.random() * 6) + 1;
             document.getElementById('dice-result').innerHTML = `주사위 결과 ➡️ 🎲 <b>${totalMove}칸</b> 전진!`;
 
             let nextPosition = currentPosition + totalMove;
-            
             if (nextPosition >= 24) {
                 lapCount++;
                 courseMoney += 1000; 
-                
                 document.getElementById('lap-counter').innerText = lapCount;
                 document.getElementById('money-counter').innerText = courseMoney.toLocaleString();
             }
@@ -456,7 +607,7 @@
                 `;
 
                 addHistoryLog(logType, currentCell.name, missionText);
-
+                saveGameData();
             }, 400);
         }
 
@@ -464,13 +615,12 @@
             isInJail = false;
             document.getElementById('dice-btn').style.display = "inline-block";
             document.getElementById('escape-btn').style.display = "none";
-            
             document.getElementById('live-mission-box').innerHTML = `🎉 무인도 탈출 완료! 다시 주사위를 굴려보세요.`;
             addHistoryLog("normal", "🌴 무인도 탈출", "벌칙 수행 완료 후 주사위 컴백!");
+            saveGameData();
         }
 
         window.addEventListener('resize', () => moveToken(currentPosition));
-        window.onload = function() { moveToken(0); };
     </script>
 </body>
 </html>
